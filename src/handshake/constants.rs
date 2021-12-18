@@ -1,0 +1,83 @@
+use crate::handshake::common::{CipherSuite, ProtocolVersion};
+
+// common values
+pub const TLS10: ProtocolVersion = [0x03, 0x01];
+pub const TLS11: ProtocolVersion = [0x03, 0x02];
+pub const TLS12: ProtocolVersion = [0x03, 0x03];
+
+// cipher suites
+pub const TLS_NULL_WITH_NULL_NULL: CipherSuite = [0x00, 0x00];
+pub const TLS_RSA_WITH_NULL_MD5: CipherSuite = [0x00, 0x01];
+pub const TLS_RSA_WITH_NULL_SHA: CipherSuite = [0x00, 0x02];
+pub const TLS_RSA_WITH_NULL_SHA256: CipherSuite = [0x00, 0x3B];
+pub const TLS_RSA_WITH_RC4_128_MD5: CipherSuite = [0x00, 0x04];
+pub const TLS_RSA_WITH_RC4_128_SHA: CipherSuite = [0x00, 0x05];
+pub const TLS_RSA_WITH_3DES_EDE_CBC_SHA: CipherSuite = [0x00, 0x0A];
+pub const TLS_RSA_WITH_AES_128_CBC_SHA: CipherSuite = [0x00, 0x2F];
+pub const TLS_RSA_WITH_AES_256_CBC_SHA: CipherSuite = [0x00, 0x35];
+pub const TLS_RSA_WITH_AES_128_CBC_SHA256: CipherSuite = [0x00, 0x3C];
+pub const TLS_RSA_WITH_AES_256_CBC_SHA256: CipherSuite = [0x00, 0x3D];
+pub const TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA: CipherSuite = [0x00, 0x0D];
+pub const TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA: CipherSuite = [0x00, 0x10];
+pub const TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA: CipherSuite = [0x00, 0x13];
+pub const TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA: CipherSuite = [0x00, 0x16];
+pub const TLS_DH_DSS_WITH_AES_128_CBC_SHA: CipherSuite = [0x00, 0x30];
+pub const TLS_DH_RSA_WITH_AES_128_CBC_SHA: CipherSuite = [0x00, 0x31];
+pub const TLS_DHE_DSS_WITH_AES_128_CBC_SHA: CipherSuite = [0x00, 0x32];
+pub const TLS_DHE_RSA_WITH_AES_128_CBC_SHA: CipherSuite = [0x00, 0x33];
+pub const TLS_DH_DSS_WITH_AES_256_CBC_SHA: CipherSuite = [0x00, 0x36];
+pub const TLS_DH_RSA_WITH_AES_256_CBC_SHA: CipherSuite = [0x00, 0x37];
+pub const TLS_DHE_DSS_WITH_AES_256_CBC_SHA: CipherSuite = [0x00, 0x38];
+pub const TLS_DHE_RSA_WITH_AES_256_CBC_SHA: CipherSuite = [0x00, 0x39];
+pub const TLS_DH_DSS_WITH_AES_128_CBC_SHA256: CipherSuite = [0x00, 0x3E];
+pub const TLS_DH_RSA_WITH_AES_128_CBC_SHA256: CipherSuite = [0x00, 0x3F];
+pub const TLS_DHE_DSS_WITH_AES_128_CBC_SHA256: CipherSuite = [0x00, 0x40];
+pub const TLS_DHE_RSA_WITH_AES_128_CBC_SHA256: CipherSuite = [0x00, 0x67];
+pub const TLS_DH_DSS_WITH_AES_256_CBC_SHA256: CipherSuite = [0x00, 0x68];
+pub const TLS_DH_RSA_WITH_AES_256_CBC_SHA256: CipherSuite = [0x00, 0x69];
+pub const TLS_DHE_DSS_WITH_AES_256_CBC_SHA256: CipherSuite = [0x00, 0x6A];
+pub const TLS_DHE_RSA_WITH_AES_256_CBC_SHA256: CipherSuite = [0x00, 0x6B];
+pub const TLS_DH_ANON_WITH_RC4_128_MD5: CipherSuite = [0x00, 0x18];
+pub const TLS_DH_ANON_WITH_3DES_EDE_CBC_SHA: CipherSuite = [0x00, 0x1B];
+pub const TLS_DH_ANON_WITH_AES_128_CBC_SHA: CipherSuite = [0x00, 0x34];
+pub const TLS_DH_ANON_WITH_AES_256_CBC_SHA: CipherSuite = [0x00, 0x3A];
+pub const TLS_DH_ANON_WITH_AES_128_CBC_SHA256: CipherSuite = [0x00, 0x6C];
+pub const TLS_DH_ANON_WITH_AES_256_CBC_SHA256: CipherSuite = [0x00, 0x6D];
+
+pub const TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256: CipherSuite = [0xCC, 0xA8];
+pub const TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256: CipherSuite = [0xCC, 0xA9];
+pub const TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256: CipherSuite = [0xCC, 0xAA];
+pub const TLS_PSK_WITH_CHACHA20_POLY1305_SHA256: CipherSuite = [0xCC, 0xAB];
+pub const TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256: CipherSuite = [0xCC, 0xAC];
+pub const TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256: CipherSuite = [0xCC, 0xAD];
+pub const TLS_RSA_PSK_WITH_CHACHA20_POLY1305_SHA256: CipherSuite = [0xCC, 0xAE];
+
+pub const TLS_ECDHE_ECDSA_WITH_NULL_SHA: CipherSuite = [0xC0, 0x06];
+pub const TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA: CipherSuite = [0xC0, 0x08];
+pub const TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA: CipherSuite = [0xC0, 0x09];
+pub const TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA: CipherSuite = [0xC0, 0x0A];
+pub const TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256: CipherSuite = [0xC0, 0x2B];
+pub const TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384: CipherSuite = [0xC0, 0x2C];
+pub const TLS_ECDHE_RSA_WITH_NULL_SHA: CipherSuite = [0xC0, 0x10];
+pub const TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA: CipherSuite = [0xC0, 0x12];
+pub const TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA: CipherSuite = [0xC0, 0x13];
+pub const TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA: CipherSuite = [0xC0, 0x14];
+pub const TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256: CipherSuite = [0xC0, 0x2F];
+pub const TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384: CipherSuite = [0xC0, 0x30];
+pub const TLS_ECDH_ANON_WITH_NULL_SHA: CipherSuite = [0xC0, 0x15];
+pub const TLS_ECDH_ANON_WITH_3DES_EDE_CBC_SHA: CipherSuite = [0xC0, 0x17];
+pub const TLS_ECDH_ANON_WITH_AES_128_CBC_SHA: CipherSuite = [0xC0, 0x18];
+pub const TLS_ECDH_ANON_WITH_AES_256_CBC_SHA: CipherSuite = [0xC0, 0x19];
+
+pub const TLS_RSA_WITH_AES_128_GCM_SHA256: CipherSuite = [0x00, 0x9C];
+pub const TLS_RSA_WITH_AES_256_GCM_SHA384: CipherSuite = [0x00, 0x9D];
+pub const TLS_DHE_RSA_WITH_AES_128_GCM_SHA256: CipherSuite = [0x00, 0x9E];
+pub const TLS_DHE_RSA_WITH_AES_256_GCM_SHA384: CipherSuite = [0x00, 0x9F];
+pub const TLS_DH_RSA_WITH_AES_128_GCM_SHA256: CipherSuite = [0x00, 0xA0];
+pub const TLS_DH_RSA_WITH_AES_256_GCM_SHA384: CipherSuite = [0x00, 0xA1];
+pub const TLS_DHE_DSS_WITH_AES_128_GCM_SHA256: CipherSuite = [0x00, 0xA2];
+pub const TLS_DHE_DSS_WITH_AES_256_GCM_SHA384: CipherSuite = [0x00, 0xA3];
+pub const TLS_DH_DSS_WITH_AES_128_GCM_SHA256: CipherSuite = [0x00, 0xA4];
+pub const TLS_DH_DSS_WITH_AES_256_GCM_SHA384: CipherSuite = [0x00, 0xA5];
+pub const TLS_DH_ANON_WITH_AES_128_GCM_SHA256: CipherSuite = [0x00, 0xA6];
+pub const TLS_DH_ANON_WITH_AES_256_GCM_SHA384: CipherSuite = [0x00, 0xA7];
