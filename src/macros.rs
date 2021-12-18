@@ -39,8 +39,9 @@ macro_rules! enum_to_u8 {
 macro_rules! enum_to_network_bytes {
     ($t:ty) => {
         impl TlsToNetworkBytes for $t {
-            fn to_network_bytes(&self, v: &mut Vec<u8>) -> Result<()> {
-                v.write_u8(*self as u8)
+            fn to_network_bytes(&self, v: &mut Vec<u8>) -> Result<usize> {
+                v.write_u8(*self as u8)?;
+                Ok(1)
             }
         }
     };

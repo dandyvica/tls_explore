@@ -56,19 +56,6 @@ fn get_generic_data(derive_input: &DeriveInput) -> Option<proc_macro2::TokenStre
     } else {
         None
     }
-
-    // if derive_input.generics.params.is_empty() {
-    //     None
-    // } else {
-    //     let v: Vec<_> = derive_input.generics.params.iter().collect();
-
-    //     // we only have one generic param here
-    //     if let GenericParam::Type(type_param) = v[0] {
-    //         Some(type_param.ident.to_string())
-    //     } else {
-    //         None
-    //     }
-    // }
 }
 
 // verify if the derive macro is applied to a structure
@@ -146,7 +133,7 @@ pub fn tls_to_network_bytes(ast: &DeriveInput) -> TokenStream {
         let field_name = f.ident.as_ref().unwrap();
 
         quote! {
-            TlsToNetworkBytes::to_network_bytes(&self.#field_name, v)?;
+            length += TlsToNetworkBytes::to_network_bytes(&self.#field_name, v)?;
         }
     });
 
@@ -157,9 +144,10 @@ pub fn tls_to_network_bytes(ast: &DeriveInput) -> TokenStream {
         quote! {
             // the generated impl.
             impl<T> TlsToNetworkBytes for #structure_name<T> #bounds  {
-                fn to_network_bytes(&self, v: &mut Vec<u8>) -> std::io::Result<()> {
+                fn to_network_bytes(&self, v: &mut Vec<u8>) -> std::io::Result<usize> {
+                    let mut length = 0usize;
                     #( #method_calls)*
-                    Ok(())
+                    Ok(length)
                 }
             }
         }
@@ -167,9 +155,10 @@ pub fn tls_to_network_bytes(ast: &DeriveInput) -> TokenStream {
         quote! {
             // the generated impl.
             impl TlsToNetworkBytes for #structure_name  {
-                fn to_network_bytes(&self, v: &mut Vec<u8>)-> std::io::Result<()> {
+                fn to_network_bytes(&self, v: &mut Vec<u8>)-> std::io::Result<usize> {
+                    let mut length = 0usize;
                     #( #method_calls)*
-                    Ok(())
+                    Ok(length)
                 }
             }
         }

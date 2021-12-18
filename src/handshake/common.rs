@@ -80,12 +80,12 @@ impl<T, const MIN: u8, const BYTES: u8> VariableLengthVector<T, MIN, BYTES>
 where
     T: Clone,
 {
-    pub fn new() -> Self {
-        VariableLengthVector {
-            length: 0,
-            data: Vec::new(),
-        }
-    }
+    // pub fn new() -> Self {
+    //     VariableLengthVector {
+    //         length: 0,
+    //         data: Vec::new(),
+    //     }
+    // }
 
     pub fn from_slice(data: &[T]) -> Self {
         // check the minimum length
