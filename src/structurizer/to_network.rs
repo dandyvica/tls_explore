@@ -155,15 +155,9 @@ impl<T: TlsToNetworkBytes, const MIN: u8, const BYTES: u8> TlsToNetworkBytes
 {
     fn to_network_bytes(&self, v: &mut Vec<u8>) -> Result<usize> {
         // convert u32 to u8/u16/u24 bytes, depending on BYTES value
-        let buffer = self.length.to_be_bytes();
+        to_ubytes(BYTES, self.length, v)?;
 
-        match BYTES {
-            1 => &buffer[3..4].to_network_bytes(v)?,
-            2 => &buffer[2..4].to_network_bytes(v)?,
-            3 => &buffer[1..4].to_network_bytes(v)?,
-            _ => panic!("not a valid value for BYTES: <{}>", BYTES),
-        };
-
+        // need to calculate length of the converted struct to return it
         let mut length = 0usize;
 
         // copy data for each element
@@ -198,17 +192,31 @@ impl<T: TlsToNetworkBytes> TlsToNetworkBytes for Vec<T> {
 
 /// ```
 /// use tls_explore::structurizer::to_network::TlsToNetworkBytes;
-/// use tls_explore::handshake::common::VariableLengthVector; 
+/// use tls_explore::handshake::common::VariableLengthVector;
 /// use tls_derive::TlsToNetworkBytes;
 ///
 /// let mut vlv: VariableLengthVector<Box<dyn TlsToNetworkBytes>, 1, 2> = VariableLengthVector::default();
-/// 
+///
 /// #[derive(TlsToNetworkBytes)] struct A { x: u16, y: u16 }
+/// #[derive(TlsToNetworkBytes)] struct B { a: Option<[u16;3]>, b: Vec<u16> }
+///
+/// vlv = VariableLengthVector {
+///     length: 0,  
+///     data: vec! [
+///         Box::new(A { x: 0x1234, y: 0x5678 }),
+///         Box::new(B { a: Some([0x1234, 0x5678, 0x9ABC]), b: vec![0x1234, 0x5678] })
+///     ]
+/// }
+///
 /// ```
 // impl<const MIN: u8, const BYTES: u8> TlsToNetworkBytes
 //     for VariableLengthVector<Box<dyn TlsToNetworkBytes>, MIN, BYTES>
 // {
 //     fn to_network_bytes(&self, v: &mut Vec<u8>) -> Result<usize> {
+//         // convert u32 to u8/u16/u24 bytes, depending on BYTES value
+//         to_ubytes(BYTES, self.length, v)?;
+
+//         // need to calculate length of the converted struct to return it
 //         let length = 0usize;
 
 //         for x in &self.data {
@@ -218,6 +226,22 @@ impl<T: TlsToNetworkBytes> TlsToNetworkBytes for Vec<T> {
 //         Ok(length + BYTES as usize)
 //     }
 // }
+
+// convert a u8/u16/u24 to u32 bigendian
+fn to_ubytes<T: Into<u32> + std::fmt::Debug>(x: T, length: u32, v: &mut Vec<u8>) -> Result<()> {
+    let buffer = length.to_be_bytes();
+
+    // convert value to u32
+    let conv = x.into();
+    match conv {
+        1 => &buffer[3..4].to_network_bytes(v)?,
+        2 => &buffer[2..4].to_network_bytes(v)?,
+        3 => &buffer[1..4].to_network_bytes(v)?,
+        _ => panic!("not a valid value for BYTES: <{:?}>", conv),
+    };
+
+    Ok(())
+}
 
 #[cfg(test)]
 mod tests {

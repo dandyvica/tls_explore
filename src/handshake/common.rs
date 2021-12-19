@@ -98,6 +98,23 @@ where
     }
 }
 
+use crate::structurizer::to_network::TlsToNetworkBytes;
+impl<const MIN: u8, const BYTES: u8> std::default::Default
+    for VariableLengthVector<Box<dyn TlsToNetworkBytes>, MIN, BYTES>
+{
+    fn default() -> Self {
+        Self {
+            length: 0,
+            data: Vec::new(),
+        }
+    }
+}
+impl<const MIN: u8, const BYTES: u8> VariableLengthVector<Box<dyn TlsToNetworkBytes>, MIN, BYTES> {
+    fn push(&mut self, elem: Box<dyn TlsToNetworkBytes>) {
+        self.data.push(elem);
+    }
+}
+
 // cipher suites are just an array of 2 bytes
 pub type CipherSuite = [u8; 2];
 
