@@ -1,13 +1,10 @@
 // the definition of the client_hello structure as defined in https://datatracker.ietf.org/doc/html/rfc5246#appendix-A.4
 use std::io::Result;
 
-use tls_derive::{TlsEnum, TlsFromNetworkBytes, TlsLength, TlsToNetworkBytes};
+use tls_derive::{TlsEnum, TlsDerive};
 
 use crate::{ext_type};
 use crate::handshake::common::VariableLengthVector;
-use crate::structurizer::{
-    from_network::TlsFromNetworkBytes, length::Length, to_network::TlsToNetworkBytes,
-};
 
 
 #[allow(unused_variables)]
@@ -30,14 +27,14 @@ trait ExtType {
 }
 
 // extensions as described in https://datatracker.ietf.org/doc/html/rfc5246#section-7.4.1.4
-#[derive(Debug, Default, TlsLength, TlsToNetworkBytes, TlsFromNetworkBytes)]
+#[derive(Debug, Default, TlsDerive)]
 pub struct Extension {
     extension_type: ExtensionType,
     extension_data: VariableLengthVector<u16, u8, 0>,
 }
 
 impl Extension {
-    pub fn add<T: TlsToNetworkBytes>(ext: T) -> Result<()> {
+    pub fn add<T: TlsDerive>(ext: T) -> Result<()> {
         // convert ext structure of type T to network bytes
         let mut v = Vec::new();
         ext.to_network_bytes(&mut v)?;
@@ -48,7 +45,7 @@ impl Extension {
 
 
 // SNI extension
-#[derive(Debug, Default, TlsLength, TlsToNetworkBytes, TlsFromNetworkBytes)]
+#[derive(Debug, Default, TlsDerive)]
 pub struct ServerName {
     host_name_type: u8,
     host_name: VariableLengthVector<u16, u8, 1>,

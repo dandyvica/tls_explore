@@ -1,12 +1,10 @@
 use std::fmt::Debug;
 
 // the global handshake structure as defined in https://datatracker.ietf.org/doc/html/rfc5246#appendix-A.4
+use crate::derive_tls::TlsDerive;
 use crate::handshake::client_hello::ClientHello;
 use crate::handshake::common::{to_u24, CipherSuite};
-use crate::structurizer::{
-    from_network::TlsFromNetworkBytes, length::TlsLength, to_network::TlsToNetworkBytes,
-};
-use tls_derive::{TlsEnum, TlsFromNetworkBytes, TlsLength, TlsToNetworkBytes};
+use tls_derive::{TlsDerive, TlsEnum};
 
 #[allow(unused_variables)]
 #[allow(non_camel_case_types)]
@@ -30,10 +28,10 @@ pub enum HandshakeType {
 }
 
 // the handshake by itself
-#[derive(Debug, Default, TlsLength, TlsToNetworkBytes, TlsFromNetworkBytes)]
+#[derive(Debug, Default, TlsDerive)]
 pub struct Handshake<T>
 where
-    T: Debug + TlsLength + TlsToNetworkBytes + TlsFromNetworkBytes,
+    T: Debug + TlsDerive,
 {
     msg_type: HandshakeType,
 

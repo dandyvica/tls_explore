@@ -67,8 +67,8 @@ fn get_struct(ast: &DeriveInput) -> &DataStruct {
     }
 }
 
-// create the length() implementation method
-pub fn tls_length(ast: &DeriveInput) -> TokenStream {
+// create the impl methods for trait TlsDerive
+pub fn tls_derive(ast: &DeriveInput) -> TokenStream {
     // get generic parameter if any
     let param = get_generic_data(&ast);
 
@@ -79,12 +79,32 @@ pub fn tls_length(ast: &DeriveInput) -> TokenStream {
     let structure_name = &ast.ident;
 
     // calculate the summation of all lengths
-    let method_calls = struct_token.fields.iter().map(|f| {
+    let method_calls_1 = struct_token.fields.iter().map(|f| {
         // get name of the field as TokenStream
         let field_name = f.ident.as_ref().unwrap();
 
         quote! {
-            TlsLength::tls_len(&self.#field_name)
+            TlsDerive::tls_len(&self.#field_name)
+        }
+    });
+
+    // call to_network_bytes() call for each field
+    let method_calls_2 = struct_token.fields.iter().map(|f| {
+        // get name of the field as TokenStream
+        let field_name = f.ident.as_ref().unwrap();
+
+        quote! {
+            length += TlsDerive::to_network_bytes(&self.#field_name, v)?;
+        }
+    });
+
+    // call from_network_bytes() call for each field
+    let method_calls_3 = struct_token.fields.iter().map(|f| {
+        // get name of the field as TokenStream
+        let field_name = f.ident.as_ref().unwrap();
+
+        quote! {
+            TlsDerive::from_network_bytes(&mut self.#field_name, v)?;
         }
     });
 
@@ -94,120 +114,39 @@ pub fn tls_length(ast: &DeriveInput) -> TokenStream {
 
         quote! {
             // the generated impl.
-            impl<T> TlsLength for #structure_name<T> #bounds {
+            impl<T> TlsDerive for #structure_name<T> #bounds {
                 fn tls_len(&self) -> usize {
-                    0 #(+ #method_calls)*
+                    0 #(+ #method_calls_1)*
                 }
-            }
-        }
-    } else {
-        quote! {
-            // the generated impl.
-            impl TlsLength for #structure_name  {
-                fn tls_len(&self) -> usize {
-                    0 #(+ #method_calls)*
-                }
-            }
-        }
-    };
 
-    // Hand the output tokens back to the compiler
-    TokenStream::from(new_code)
-}
-
-// create the to_network_bytes() method
-pub fn tls_to_network_bytes(ast: &DeriveInput) -> TokenStream {
-    // get generic parameter if any
-    let param = get_generic_data(&ast);
-
-    // get struct data or panic
-    let struct_token = get_struct(&ast);
-
-    // test if input is a struct: don't want anything other than that
-    // save structure name because we're gonna use it soon
-    let structure_name = &ast.ident;
-
-    // calculate the summation of all lengths
-    let method_calls = struct_token.fields.iter().map(|f| {
-        // get name of the field as TokenStream
-        let field_name = f.ident.as_ref().unwrap();
-
-        quote! {
-            length += TlsToNetworkBytes::to_network_bytes(&self.#field_name, v)?;
-        }
-    });
-
-    // implement the Structurizer trait for function TlsLength()
-    let new_code = if param.is_some() {
-        let bounds: proc_macro2::TokenStream = param.unwrap();
-
-        quote! {
-            // the generated impl.
-            impl<T> TlsToNetworkBytes for #structure_name<T> #bounds  {
                 fn to_network_bytes(&self, v: &mut Vec<u8>) -> std::io::Result<usize> {
                     let mut length = 0usize;
-                    #( #method_calls)*
+                    #( #method_calls_2)*
                     Ok(length)
+                }
+
+                fn from_network_bytes(&mut self, v: &mut std::io::Cursor<Vec<u8>>) -> std::io::Result<()> {
+                    #( #method_calls_3)*
+                    Ok(())
                 }
             }
         }
     } else {
         quote! {
             // the generated impl.
-            impl TlsToNetworkBytes for #structure_name  {
+            impl TlsDerive for #structure_name  {
+                fn tls_len(&self) -> usize {
+                    0 #(+ #method_calls_1)*
+                }
+
                 fn to_network_bytes(&self, v: &mut Vec<u8>)-> std::io::Result<usize> {
                     let mut length = 0usize;
-                    #( #method_calls)*
+                    #( #method_calls_2)*
                     Ok(length)
                 }
-            }
-        }
-    };
 
-    // Hand the output tokens back to the compiler
-    TokenStream::from(new_code)
-}
-
-// create the from_network_bytes() method
-pub fn tls_from_network_bytes(ast: &DeriveInput) -> TokenStream {
-    // get generic parameter if any
-    let param = get_generic_data(&ast);
-
-    // get struct data or panic
-    let struct_token = get_struct(&ast);
-
-    // save structure name because we're gonna use it soon
-    let structure_name = &ast.ident;
-
-    // calculate the summation of all lengths
-    let method_calls = struct_token.fields.iter().map(|f| {
-        // get name of the field as TokenStream
-        let field_name = f.ident.as_ref().unwrap();
-
-        quote! {
-            TlsFromNetworkBytes::from_network_bytes(&mut self.#field_name, v)?;
-        }
-    });
-
-    // implement the Structurizer trait for function length()
-    let new_code = if param.is_some() {
-        let bounds: proc_macro2::TokenStream = param.unwrap();
-
-        quote! {
-            // the generated impl.
-            impl<T> TlsFromNetworkBytes for #structure_name<T> #bounds {
                 fn from_network_bytes(&mut self, v: &mut std::io::Cursor<Vec<u8>>) -> std::io::Result<()> {
-                    #( #method_calls)*
-                    Ok(())
-                }
-            }
-        }
-    } else {
-        quote! {
-            // the generated impl.
-            impl TlsFromNetworkBytes for #structure_name  {
-                fn from_network_bytes(&mut self, v: &mut std::io::Cursor<Vec<u8>>) -> std::io::Result<()> {
-                    #( #method_calls)*
+                    #( #method_calls_3)*
                     Ok(())
                 }
             }
@@ -217,3 +156,106 @@ pub fn tls_from_network_bytes(ast: &DeriveInput) -> TokenStream {
     // Hand the output tokens back to the compiler
     TokenStream::from(new_code)
 }
+
+// // create the to_network_bytes() method
+// pub fn tls_to_network_bytes(ast: &DeriveInput) -> TokenStream {
+//     // get generic parameter if any
+//     let param = get_generic_data(&ast);
+
+//     // get struct data or panic
+//     let struct_token = get_struct(&ast);
+
+//     // test if input is a struct: don't want anything other than that
+//     // save structure name because we're gonna use it soon
+//     let structure_name = &ast.ident;
+
+//     // calculate the summation of all lengths
+//     let method_calls = struct_token.fields.iter().map(|f| {
+//         // get name of the field as TokenStream
+//         let field_name = f.ident.as_ref().unwrap();
+
+//         quote! {
+//             length += TlsToNetworkBytes::to_network_bytes(&self.#field_name, v)?;
+//         }
+//     });
+
+//     // implement the Structurizer trait for function TlsLength()
+//     let new_code = if param.is_some() {
+//         let bounds: proc_macro2::TokenStream = param.unwrap();
+
+//         quote! {
+//             // the generated impl.
+//             impl<T> TlsToNetworkBytes for #structure_name<T> #bounds  {
+//                 fn to_network_bytes(&self, v: &mut Vec<u8>) -> std::io::Result<usize> {
+//                     let mut length = 0usize;
+//                     #( #method_calls)*
+//                     Ok(length)
+//                 }
+//             }
+//         }
+//     } else {
+//         quote! {
+//             // the generated impl.
+//             impl TlsToNetworkBytes for #structure_name  {
+//                 fn to_network_bytes(&self, v: &mut Vec<u8>)-> std::io::Result<usize> {
+//                     let mut length = 0usize;
+//                     #( #method_calls)*
+//                     Ok(length)
+//                 }
+//             }
+//         }
+//     };
+
+//     // Hand the output tokens back to the compiler
+//     TokenStream::from(new_code)
+// }
+
+// // create the from_network_bytes() method
+// pub fn tls_from_network_bytes(ast: &DeriveInput) -> TokenStream {
+//     // get generic parameter if any
+//     let param = get_generic_data(&ast);
+
+//     // get struct data or panic
+//     let struct_token = get_struct(&ast);
+
+//     // save structure name because we're gonna use it soon
+//     let structure_name = &ast.ident;
+
+//     // calculate the summation of all lengths
+//     let method_calls = struct_token.fields.iter().map(|f| {
+//         // get name of the field as TokenStream
+//         let field_name = f.ident.as_ref().unwrap();
+
+//         quote! {
+//             TlsFromNetworkBytes::from_network_bytes(&mut self.#field_name, v)?;
+//         }
+//     });
+
+//     // implement the Structurizer trait for function length()
+//     let new_code = if param.is_some() {
+//         let bounds: proc_macro2::TokenStream = param.unwrap();
+
+//         quote! {
+//             // the generated impl.
+//             impl<T> TlsFromNetworkBytes for #structure_name<T> #bounds {
+//                 fn from_network_bytes(&mut self, v: &mut std::io::Cursor<Vec<u8>>) -> std::io::Result<()> {
+//                     #( #method_calls)*
+//                     Ok(())
+//                 }
+//             }
+//         }
+//     } else {
+//         quote! {
+//             // the generated impl.
+//             impl TlsFromNetworkBytes for #structure_name  {
+//                 fn from_network_bytes(&mut self, v: &mut std::io::Cursor<Vec<u8>>) -> std::io::Result<()> {
+//                     #( #method_calls)*
+//                     Ok(())
+//                 }
+//             }
+//         }
+//     };
+
+//     // Hand the output tokens back to the compiler
+//     TokenStream::from(new_code)
+// }

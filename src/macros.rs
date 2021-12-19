@@ -2,10 +2,8 @@
 #[macro_export]
 macro_rules! enum_length {
     ($t:ty) => {
-        impl TlsLength for $t {
-            fn tls_len(&self) -> usize {
-                std::mem::size_of::<$t>()
-            }
+        fn tls_len(&self) -> usize {
+            std::mem::size_of::<$t>()
         }
     };
 }
@@ -38,11 +36,9 @@ macro_rules! enum_to_u8 {
 #[macro_export]
 macro_rules! enum_to_network_bytes {
     ($t:ty) => {
-        impl TlsToNetworkBytes for $t {
-            fn to_network_bytes(&self, v: &mut Vec<u8>) -> Result<usize> {
-                v.write_u8(*self as u8)?;
-                Ok(1)
-            }
+        fn to_network_bytes(&self, v: &mut Vec<u8>) -> Result<usize> {
+            v.write_u8(*self as u8)?;
+            Ok(1)
         }
     };
 }
@@ -51,29 +47,28 @@ macro_rules! enum_to_network_bytes {
 #[macro_export]
 macro_rules! enum_from_network_bytes {
     ($t:ty, u8) => {
-        impl TlsFromNetworkBytes for $t {
-            fn from_network_bytes(&mut self, v: &mut Cursor<Vec<u8>>) -> Result<()> {
-                let value = v.read_u8()?;
-                if let Ok(ct) = <$t>::try_from(value as u16) {
-                    *self = ct;
-                    Ok(())
-                } else {
-                    Err(Error::new(ErrorKind::Other, "TryFrom() conversion error"))
-                }
+        fn from_network_bytes(&mut self, v: &mut Cursor<Vec<u8>>) -> Result<()> {
+            let value = v.read_u8()?;
+            if let Ok(ct) = <$t>::try_from(value as u16) {
+                *self = ct;
+                Ok(())
+            } else {
+                Err(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "TryFrom() conversion error",
+                ))
             }
         }
     };
 
     ($t:ty, u16) => {
-        impl TlsFromNetworkBytes for $t {
-            fn from_network_bytes(&mut self, v: &mut Cursor<Vec<u8>>) -> Result<()> {
-                let value = v.read_u16::<BigEndian>()?;
-                if let Ok(ct) = <$t>::try_from(value) {
-                    *self = ct;
-                    Ok(())
-                } else {
-                    Err(Error::new(ErrorKind::Other, "TryFrom() conversion error"))
-                }
+        fn from_network_bytes(&mut self, v: &mut Cursor<Vec<u8>>) -> Result<()> {
+            let value = v.read_u16::<BigEndian>()?;
+            if let Ok(ct) = <$t>::try_from(value) {
+                *self = ct;
+                Ok(())
+            } else {
+                Err(Error::new(ErrorKind::Other, "TryFrom() conversion error"))
             }
         }
     };

@@ -1,9 +1,7 @@
 #![allow(dead_code)]
+use crate::derive_tls::TlsDerive;
 use crate::handshake::record_layer::RecordLayer;
-use crate::structurizer::{
-    from_network::TlsFromNetworkBytes, length::TlsLength, to_network::TlsToNetworkBytes,
-};
-use tls_derive::{TlsEnum, TlsFromNetworkBytes, TlsLength, TlsToNetworkBytes};
+use tls_derive::{TlsDerive, TlsEnum};
 
 #[allow(non_camel_case_types)]
 #[derive(Debug, Copy, Clone, TlsEnum)]
@@ -44,7 +42,7 @@ pub enum AlertDescription {
     unsupported_extension = 110, /* new */
 }
 
-#[derive(Debug, Default, TlsLength, TlsToNetworkBytes, TlsFromNetworkBytes)]
+#[derive(Debug, Default, TlsDerive)]
 pub struct Alert {
     level: AlertLevel,
     description: AlertDescription,

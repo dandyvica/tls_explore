@@ -18,20 +18,6 @@ pub trait TlsToNetworkBytes {
 /// use tls_explore::structurizer::to_network::TlsToNetworkBytes;
 ///
 /// let mut buffer: Vec<u8> = Vec::new();
-/// assert!(255_u8.to_network_bytes(&mut buffer).is_ok());
-/// assert_eq!(buffer, &[0xFF]);
-/// ```
-impl TlsToNetworkBytes for u8 {
-    fn to_network_bytes(&self, v: &mut Vec<u8>) -> Result<usize> {
-        v.write_u8(*self)?;
-        Ok(1)
-    }
-}
-
-/// ```
-/// use tls_explore::structurizer::to_network::TlsToNetworkBytes;
-///
-/// let mut buffer: Vec<u8> = Vec::new();
 /// assert!(0x1234_u16.to_network_bytes(&mut buffer).is_ok());
 /// assert_eq!(buffer, &[0x12, 0x34]);
 /// ```
@@ -92,12 +78,6 @@ impl<T: TlsToNetworkBytes, const N: usize> TlsToNetworkBytes for [T; N] {
         Ok(length)
     }
 }
-
-enum_to_network_bytes!(ContentType);
-enum_to_network_bytes!(HandshakeType);
-enum_to_network_bytes!(AlertLevel);
-enum_to_network_bytes!(AlertDescription);
-enum_to_network_bytes!(ExtensionType);
 
 /// ```
 /// use tls_explore::structurizer::to_network::TlsToNetworkBytes;

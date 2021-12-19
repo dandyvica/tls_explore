@@ -4,9 +4,6 @@ use std::io::Cursor;
 use std::net::TcpStream;
 use std::{io::prelude::*, net::TcpListener};
 
-mod structurizer;
-//use structurizer::length::Length;
-use structurizer::{from_network::TlsFromNetworkBytes, to_network::TlsToNetworkBytes};
 //use tls_derive::TlsLength;
 
 mod alert;
@@ -19,6 +16,9 @@ use handshake::{
     handshake::Handshake,
     record_layer::{RecordHeader, RecordLayer},
 };
+
+mod derive_tls;
+use derive_tls::TlsDerive;
 
 use crate::alert::alert::{Alert, AlertRecord};
 

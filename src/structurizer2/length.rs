@@ -35,15 +35,7 @@ impl TlsLength for Random {
     }
 }
 
-enum_length!(u8);
-enum_length!(u16);
-enum_length!(u32);
-enum_length!(ContentType);
-enum_length!(HandshakeType);
 //enum_length!(Random);
-enum_length!(AlertLevel);
-enum_length!(AlertDescription);
-enum_length!(ExtensionType);
 
 /// ```
 /// use tls_explore::structurizer::length::TlsLength;

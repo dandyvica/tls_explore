@@ -1,18 +1,16 @@
 // the definition of the client_hello structure as defined in https://datatracker.ietf.org/doc/html/rfc5246#appendix-A.4
 //use std::io::Result;
 
+use crate::derive_tls::TlsDerive;
 use crate::ext_type;
 use crate::handshake::common::{
     CipherSuite, CompressionMethod, ProtocolVersion, Random, SessionID, VariableLengthVector,
 };
 use crate::handshake::constants::*;
-use crate::structurizer::{
-    from_network::TlsFromNetworkBytes, length::TlsLength, to_network::TlsToNetworkBytes,
-};
-use tls_derive::{TlsEnum, TlsFromNetworkBytes, TlsLength, TlsToNetworkBytes};
+use tls_derive::{TlsDerive, TlsEnum};
 
 //
-#[derive(Debug, Default, TlsLength, TlsToNetworkBytes, TlsFromNetworkBytes)]
+#[derive(Debug, Default, TlsDerive)]
 pub struct ClientHello {
     client_version: ProtocolVersion,
     random: Random,
@@ -99,7 +97,7 @@ pub trait ExtType {
 }
 
 // extensions as described in https://datatracker.ietf.org/doc/html/rfc5246#section-7.4.1.4
-#[derive(Debug, Default, TlsLength, TlsToNetworkBytes, TlsFromNetworkBytes)]
+#[derive(Debug, Default, TlsDerive)]
 pub struct GenericExtension {
     extension_type: ExtensionType,
     extension_data: VariableLengthVector<u8, 0, 2>,
@@ -107,7 +105,7 @@ pub struct GenericExtension {
 }
 
 impl GenericExtension {
-    pub fn from_extension<T: TlsToNetworkBytes + ExtType>(extension: &T) -> std::io::Result<Self> {
+    pub fn from_extension<T: TlsDerive + ExtType>(extension: &T) -> std::io::Result<Self> {
         // get type from trait's method
         let extension_type = extension.extension_type();
 
@@ -123,7 +121,7 @@ impl GenericExtension {
 }
 
 // SNI extension
-#[derive(Debug, Default, TlsLength, TlsToNetworkBytes, TlsFromNetworkBytes)]
+#[derive(Debug, Default, TlsDerive)]
 pub struct ServerNameList {
     length: u16,
     host_name_type: u8,

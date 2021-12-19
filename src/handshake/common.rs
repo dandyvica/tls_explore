@@ -98,9 +98,9 @@ where
     }
 }
 
-use crate::structurizer::to_network::TlsToNetworkBytes;
+use crate::derive_tls::TlsDerive;
 impl<const MIN: u8, const BYTES: u8> std::default::Default
-    for VariableLengthVector<Box<dyn TlsToNetworkBytes>, MIN, BYTES>
+    for VariableLengthVector<Box<dyn TlsDerive>, MIN, BYTES>
 {
     fn default() -> Self {
         Self {
@@ -109,8 +109,9 @@ impl<const MIN: u8, const BYTES: u8> std::default::Default
         }
     }
 }
-impl<const MIN: u8, const BYTES: u8> VariableLengthVector<Box<dyn TlsToNetworkBytes>, MIN, BYTES> {
-    fn push(&mut self, elem: Box<dyn TlsToNetworkBytes>) {
+impl<const MIN: u8, const BYTES: u8> VariableLengthVector<Box<dyn TlsDerive>, MIN, BYTES> {
+    fn push(&mut self, elem: Box<dyn TlsDerive>) {
+        self.length += elem.tls_len() as u32;
         self.data.push(elem);
     }
 }
